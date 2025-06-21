@@ -1,7 +1,5 @@
-from src import masks
+from src import widget
 
-card_number = int(input())
-account_number = int(input())
+account_or_card_number = input()
 
-print(masks.get_mask_card_number(card_number))
-print(masks.get_mask_account(account_number))
+print(widget.mask_account_card(account_or_card_number))
