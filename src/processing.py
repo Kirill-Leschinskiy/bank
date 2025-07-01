@@ -1,7 +1,9 @@
-from typing import Dict, List
+from typing import Dict, List, Union
 
 
-def filter_by_state(banking_operations: List[Dict[str, str | int]], state="EXECUTED") -> List[Dict[str, str | int]]:
+def filter_by_state(
+    banking_operations: List[Dict[str, Union[str, int]]], state="EXECUTED"
+) -> List[Dict[str, str | int]]:
     """Функция фильтрует операции по статусу"""
     banking_operations_filtered = []
     for operation in banking_operations:
@@ -10,7 +12,9 @@ def filter_by_state(banking_operations: List[Dict[str, str | int]], state="EXECU
     return banking_operations_filtered
 
 
-def sort_by_date(banking_operations: List[Dict[str, str | int]], descending_sort=True) -> List[Dict[str, str | int]]:
+def sort_by_date(
+    banking_operations: List[Dict[str, Union[str, int]]], descending_sort=True
+) -> List[Dict[str, str | int]]:
     """Функция сортирует операции по дате (сначала самые полседние)"""
     banking_operations_sorted = []
     dates = []
