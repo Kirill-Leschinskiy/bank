@@ -14,7 +14,7 @@ def test_raises_get_mask_card_number(
     invalid_data_int: int,
     invalid_data_list: list,
     invalid_data_empty_string: str,
-    invalid_data_few_digits: str,
+    few_digits_for_card_number: str,
     many_digits: str,
 ) -> None:
     with pytest.raises(ValueError):
@@ -24,7 +24,7 @@ def test_raises_get_mask_card_number(
     with pytest.raises(ValueError):
         get_mask_card_number(invalid_data_empty_string)
     with pytest.raises(ValueError):
-        get_mask_card_number(invalid_data_few_digits)
+        get_mask_card_number(few_digits_for_card_number)
     with pytest.raises(ValueError):
         get_mask_card_number(many_digits)
 
