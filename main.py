@@ -1,4 +1,4 @@
-from src import processing, widget, generators
+from src import generators, processing, widget
 
 account_or_card_number = input()
 date = input()
