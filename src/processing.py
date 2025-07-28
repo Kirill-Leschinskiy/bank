@@ -2,9 +2,11 @@ from typing import Dict, List, Union
 
 
 def filter_by_state(
-    banking_operations: List[Dict[str, Union[str, int]]], state="EXECUTED"
+    banking_operations: List[Dict[str, Union[str, int]]], state: str = "EXECUTED"
 ) -> List[Dict[str, str | int]]:
     """Функция фильтрует операции по статусу"""
+    if banking_operations == []:
+        raise ValueError("Передан пустой список")
     banking_operations_filtered = []
     for operation in banking_operations:
         if operation.get("state") == state:
@@ -13,9 +15,11 @@ def filter_by_state(
 
 
 def sort_by_date(
-    banking_operations: List[Dict[str, Union[str, int]]], descending_sort=True
+    banking_operations: List[Dict[str, Union[str, int]]], descending_sort: bool = True
 ) -> List[Dict[str, str | int]]:
-    """Функция сортирует операции по дате (сначала самые полседние)"""
+    """Функция сортирует операции по дате (сначала самые последние)"""
+    if banking_operations == []:
+        raise ValueError("Передан пустой список")
     banking_operations_sorted = []
     dates = []
     for operation in banking_operations:
