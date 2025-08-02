@@ -23,7 +23,7 @@ def test_summary(capsys):
         assert "summary result: 3" in log_content[-1]
 
 
-def test_error_function(capsys):
+def test_division(capsys):
     with pytest.raises(ZeroDivisionError):
         division(1, 0)
 
