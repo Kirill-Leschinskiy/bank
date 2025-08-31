@@ -1,19 +1,20 @@
 import os
 import logging
 
-if not os.path.exists('logs'):
-    os.makedirs('logs')
+if not os.path.exists("logs"):
+    os.makedirs("logs")
 
-logger = logging.getLoger('masks')
+logger = logging.getLogger("masks")
 logger.setLevel(logging.DEBUG)
 
-file_handler = logging.FileHandler('logs/masks.log', mode='w')
+file_handler = logging.FileHandler("logs/masks.log", mode="w")
 file_handler.setLevel(logging.DEBUG)
 
-file_formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+file_formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 file_handler.setFormatter(file_formatter)
 
 logger.addHandler(file_handler)
+
 
 def get_mask_card_number(card_number: str) -> str:
     """Функция маскирует номер карты в формате XXXX XX** **** XXXX, где X — это цифра номера"""
