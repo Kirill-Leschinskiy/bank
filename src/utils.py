@@ -19,9 +19,9 @@ logger.addHandler(file_handler)
 
 
 def transactions_loaded(file_path: str) -> List[Dict[str, Union[int, str]]]:
-    """Загружает транзакции из JSON-файла."""
+    """Загружает транзакции из JSON-файла"""
     if not os.path.isfile(file_path):
-        logger.error(f"Файла по такому пути не существует")
+        logger.error("Файла по такому пути не существует")
         return []
 
     with open(file_path, "r", encoding="utf-8") as f:

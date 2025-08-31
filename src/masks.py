@@ -4,7 +4,7 @@ import logging
 if not os.path.exists('logs'):
     os.makedirs('logs')
 
-logger = logging.getLoger('masks')
+logger = logging.getLogger('masks')
 logger.setLevel(logging.DEBUG)
 
 file_handler = logging.FileHandler('logs/masks.log', mode='w')
