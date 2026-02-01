@@ -1,7 +1,7 @@
 import json
 import logging
 import os
-from typing import Dict, List, Union
+from typing import Dict, List
 
 if not os.path.exists("logs"):
     os.makedirs("logs")
@@ -18,21 +18,50 @@ file_handler.setFormatter(file_formatter)
 logger.addHandler(file_handler)
 
 
-def transactions_loaded(file_path: str) -> List[Dict[str, Union[int, str]]]:
-    """Загружает транзакции из JSON-файла"""
-    if not os.path.isfile(file_path):
-        logger.error("Файла по такому пути не существует")
-        return []
+def transactions_loaded(file_path: str) -> List[Dict]:
+    """Загружает транзакции из JSON-файла (старая функция для совместимости)"""
+    from src.file_loaders import load_json
 
-    with open(file_path, "r", encoding="utf-8") as f:
-        try:
-            data = json.load(f)
-            if isinstance(data, list):
-                logger.info(f"Транзакция успешно загружены из файла: {file_path}")
-                return data
-            else:
-                logger.warning(f"Данные в файле {file_path} не являются списком")
-                return []
-        except json.JSONDecodeError as error:
-            logger.error(f"Произошла ошибка при декодировании JSON из файла {file_path}: {error}")
-            return []
+    return load_json(file_path)
+
+
+def normalize_transaction_data(transactions: List[Dict]) -> List[Dict]:
+    """
+    Нормализует структуру транзакций из разных источников
+    к единому формату.
+    """
+    normalized = []
+
+    for transaction in transactions:
+        normalized_transaction = transaction.copy()
+
+        # Нормализация поля state
+        if "state" in normalized_transaction:
+            normalized_transaction["state"] = str(normalized_transaction["state"]).upper()
+
+        # Нормализация поля operationAmount для CSV/XLSX
+        if "operationAmount" not in normalized_transaction or not normalized_transaction["operationAmount"]:
+            amount = normalized_transaction.get("amount", "")
+            currency_code = normalized_transaction.get("currency", "RUB")
+            currency_name = "руб." if currency_code == "RUB" else currency_code
+
+            normalized_transaction["operationAmount"] = {
+                "amount": str(amount),
+                "currency": {"code": str(currency_code), "name": str(currency_name)},
+            }
+
+        # Убедимся, что operationAmount - это словарь
+        if isinstance(normalized_transaction.get("operationAmount"), str):
+            try:
+                normalized_transaction["operationAmount"] = json.loads(
+                    normalized_transaction["operationAmount"].replace("'", '"')
+                )
+            except:
+                normalized_transaction["operationAmount"] = {
+                    "amount": "0",
+                    "currency": {"code": "RUB", "name": "руб."},
+                }
+
+        normalized.append(normalized_transaction)
+
+    return normalized
