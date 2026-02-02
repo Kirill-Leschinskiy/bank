@@ -1,3 +1,7 @@
+import json
+import os
+import tempfile
+
 import pytest
 
 
@@ -68,15 +72,7 @@ def transactions():
             "id": 939719570,
             "state": "EXECUTED",
             "date": "2018-06-30T02:08:58.425572",
-            "operationAmount":
-            {
-                "amount": "9824.07",
-                "currency":
-                    {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-            },
+            "operationAmount": {"amount": "9824.07", "currency": {"name": "USD", "code": "USD"}},
             "description": "Перевод организации",
             "from": "Счет 75106830613657916952",
             "to": "Счет 11776614605963066702",
@@ -85,15 +81,7 @@ def transactions():
             "id": 142264268,
             "state": "EXECUTED",
             "date": "2019-04-04T23:20:05.206878",
-            "operationAmount":
-                {
-                    "amount": "79114.93",
-                    "currency":
-                        {
-                            "name": "USD",
-                            "code": "USD"
-                        }
-                },
+            "operationAmount": {"amount": "79114.93", "currency": {"name": "USD", "code": "USD"}},
             "description": "Перевод со счета на счет",
             "from": "Счет 19708645243004258542",
             "to": "Счет 75651667383060289041",
@@ -102,15 +90,7 @@ def transactions():
             "id": 873106923,
             "state": "EXECUTED",
             "date": "2019-03-23T01:09:46.296404",
-            "operationAmount":
-                {
-                    "amount": "43318.34",
-                    "currency":
-                    {
-                        "name": "руб.",
-                        "code": "RUB"
-                    }
-                },
+            "operationAmount": {"amount": "43318.34", "currency": {"name": "руб.", "code": "RUB"}},
             "description": "Перевод организации",
             "from": "Счет 62094817784861134719",
             "to": "Счет 12574190247521191805",
@@ -119,15 +99,7 @@ def transactions():
             "id": 895315941,
             "state": "EXECUTED",
             "date": "2018-08-19T04:27:37.904916",
-            "operationAmount":
-                {
-                    "amount": "56883.54",
-                    "currency":
-                    {
-                        "name": "USD",
-                        "code": "USD"
-                    }
-                },
+            "operationAmount": {"amount": "56883.54", "currency": {"name": "USD", "code": "USD"}},
             "description": "Перевод с карты на карту",
             "from": "Visa Classic 6831982476737658",
             "to": "Visa Platinum 8990922113665229",
@@ -136,17 +108,77 @@ def transactions():
             "id": 594226727,
             "state": "CANCELED",
             "date": "2018-09-12T21:27:25.241689",
-            "operationAmount":
-                {
-                    "amount": "67314.70",
-                    "currency":
-                        {
-                            "name": "руб.",
-                            "code": "RUB"
-                        }
-                },
+            "operationAmount": {"amount": "67314.70", "currency": {"name": "руб.", "code": "RUB"}},
             "description": "Перевод организации",
             "from": "Visa Platinum 1246377376343588",
             "to": "Счет 14218585144415332012",
         },
     ]
+
+
+@pytest.fixture
+def temp_json_file():
+    """Фикстура для временного JSON файла"""
+    test_data = [{"id": 1, "name": "Test 1"}, {"id": 2, "name": "Test 2"}]
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".json", delete=False) as f:
+        json.dump(test_data, f)
+        temp_path = f.name
+
+    yield temp_path
+
+    # Очистка после теста
+    if os.path.exists(temp_path):
+        os.unlink(temp_path)
+
+
+@pytest.fixture
+def temp_csv_file():
+    """Фикстура для временного CSV файла"""
+    csv_content = """id,description,amount,currency
+1,Перевод организации,1000,RUB
+2,Пополнение счета,500,USD
+"""
+
+    with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False, encoding="utf-8") as f:
+        f.write(csv_content)
+        temp_path = f.name
+
+    yield temp_path
+
+    # Очистка после теста
+    if os.path.exists(temp_path):
+        os.unlink(temp_path)
+
+
+@pytest.fixture
+def mock_input():
+    """Фикстура для мока ввода пользователя"""
+    import builtins
+
+    original_input = builtins.input
+
+    def mock_input_func(prompt=""):
+        return mock_input_func.responses.pop(0)
+
+    mock_input_func.responses = []
+    builtins.input = mock_input_func
+
+    yield mock_input_func
+
+    # Восстанавливаем оригинальный input
+    builtins.input = original_input
+
+
+@pytest.fixture
+def capture_stdout():
+    """Фикстура для захвата вывода в stdout"""
+    import io
+    import sys
+
+    old_stdout = sys.stdout
+    sys.stdout = io.StringIO()
+
+    yield sys.stdout
+
+    sys.stdout = old_stdout
