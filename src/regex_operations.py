@@ -1,4 +1,5 @@
 import re
+from collections import Counter
 from typing import Dict, List
 
 
@@ -24,19 +25,30 @@ def filter_by_description(data: List[Dict], search: str) -> List[Dict]:
 def count_by_category(data: List[Dict], categories: List[str]) -> Dict[str, int]:
     """
     Считает количество операций по категориям.
-    Возвращает словарь с количеством операций для каждой категории.
+    Использует Counter для подсчета.
     """
     if not data:
+        return {category: 0 for category in categories} if categories else {}
+
+    if not categories:
         return {}
 
-    categories_lower = [cat.lower() for cat in categories]
-    result = {category: 0 for category in categories}
+    counter = Counter()
 
+    # Считаем операции по категориям
     for operation in data:
         description = operation.get("description", "").lower()
-        for i, category in enumerate(categories_lower):
-            if category in description:
-                result[categories[i]] += 1
-                break
 
-    return result
+        # Проверяем каждую категорию
+        for category in categories:
+            category_lower = category.lower()
+            if category_lower in description:
+                counter[category] += 1
+
+    # Добавляем категории с нулевым количеством
+    for category in categories:
+        if category not in counter:
+            counter[category] = 0
+
+    return dict(counter)
+
