@@ -52,7 +52,7 @@ def load_csv(file_path: str) -> List[Dict]:
     try:
         with open(path, "r", encoding="utf-8") as file:
             # Используем DictReader с явным указанием delimiter
-            reader: csv.DictReader = csv.DictReader(file, delimiter=',')
+            reader: csv.DictReader = csv.DictReader(file, delimiter=';')
 
             if not reader.fieldnames:
                 raise ValueError("CSV файл пуст или не содержит заголовков")
@@ -83,7 +83,6 @@ def load_csv(file_path: str) -> List[Dict]:
                         else:
                             processed_row[normalized_key] = value
 
-                # КРИТИЧЕСКОЕ ИСПРАВЛЕНИЕ: Нормализуем поле state
                 if 'state' in processed_row and processed_row['state']:
                     state_value: Any = processed_row['state']
                     if isinstance(state_value, str):
@@ -91,10 +90,8 @@ def load_csv(file_path: str) -> List[Dict]:
                     else:
                         processed_row['state'] = str(state_value).strip().upper()
 
-                # Преобразуем числовые поля
                 if 'id' in processed_row and processed_row['id']:
                     try:
-                        # Пытаемся преобразовать в int
                         id_value: Any = processed_row['id']
                         if isinstance(id_value, str):
                             # Убираем возможные дробные части
@@ -103,7 +100,7 @@ def load_csv(file_path: str) -> List[Dict]:
                         else:
                             processed_row['id'] = int(id_value)
                     except (ValueError, TypeError):
-                        pass  # Оставляем как есть если не число
+                        pass
 
                 data.append(processed_row)
 
@@ -118,10 +115,9 @@ def load_csv(file_path: str) -> List[Dict]:
         logger.error(f"Ошибка чтения CSV: {csv_err}")
         raise ValueError(f"Некорректный CSV формат в файле {path.name}")
     except UnicodeDecodeError:
-        # Пробуем другие кодировки
         try:
             with open(path, "r", encoding="cp1251") as file:
-                reader = csv.DictReader(file, delimiter=',')
+                reader = csv.DictReader(file, delimiter=';')
                 data = list(reader)
                 logger.info(f"Загружено {len(data)} записей с кодировкой cp1251")
                 return data

@@ -18,7 +18,6 @@ def find_data_file(file_type: str) -> Optional[Path]:
         print(f"Текущая директория: {Path.cwd()}")
         return None
 
-    # Возможные имена файлов для каждого типа
     file_patterns = {
         "json": ["operations.json", "transactions.json", "*.json"],
         "csv": ["transactions.csv", "operations.csv", "*.csv"],
@@ -29,22 +28,18 @@ def find_data_file(file_type: str) -> Optional[Path]:
     if file_type not in file_patterns:
         return None
 
-    # Сначала ищем по конкретным именам
     for pattern in file_patterns[file_type]:
         if "*" in pattern:
-            # Ищем по шаблону
             files = list(data_dir.glob(pattern))
             if files:
                 print(f"Найден файл по шаблону: {files[0].name}")
                 return files[0]
         else:
-            # Ищем конкретный файл
             file_path = data_dir / pattern
             if file_path.exists():
                 print(f"Найден файл: {file_path.name}")
                 return file_path
 
-    # Если файл не найден, покажем что есть в папке
     print(f"Не найден {file_type.upper()} файл в папке data/")
     print("\nСодержимое папки data/:")
 
@@ -256,15 +251,12 @@ def display_transactions(transactions: List[Dict]) -> None:
 
 def main() -> None:
     """Основная функция программы."""
-    print("=" * 60)
     print("Привет! Добро пожаловать в программу работы с банковскими транзакциями.")
     print("Выберите необходимый пункт меню:")
     print("1. Получить информацию о транзакциях из JSON-файла")
     print("2. Получить информацию о транзакциях из CSV-файла")
     print("3. Получить информацию о транзакциях из XLSX-файла")
-    print("=" * 60)
 
-    # Выбор типа файла
     while True:
         try:
             choice = input("> ").strip()
@@ -287,20 +279,17 @@ def main() -> None:
             print("\n\nПрограмма прервана")
             return
 
-    # Загрузка данных
     transactions = load_transactions_from_file(file_type)
 
     if not transactions:
         return
 
-    # Фильтрация по статусу
     status = get_valid_status()
     filtered_transactions = processing.filter_by_state(transactions, status)
 
     if not filtered_transactions:
         print("Не найдено операций с выбранным статусом")
 
-        # Покажем какие статусы есть в данных
         unique_states = set()
         for transaction in transactions:
             state = transaction.get('state')
@@ -331,7 +320,7 @@ def main() -> None:
         if filtered_transactions:
             print(f"Оставлено {len(filtered_transactions)} рублевых транзакций\n")
         else:
-            print("⚠Рублевых транзакций не найдено\n")
+            print("Рублевых транзакций не найдено\n")
 
     # Поиск по описанию
     if get_yes_no_answer("Отфильтровать список транзакций по определенному слову в описании? Да/Нет"):
